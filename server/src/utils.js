@@ -1,5 +1,7 @@
 const SQL = require('sequelize');
 
+// checks if item has cursor and if cursor is in results. If so, returns items after cursor
+// cursor must be a uique value, works liks a key
 module.exports.paginateResults = ({
   after: cursor,
   pageSize = 20,
@@ -10,8 +12,8 @@ module.exports.paginateResults = ({
   if (pageSize < 1) return [];
 
   if (!cursor) return results.slice(0, pageSize);
-  const cursorIndex = results.findIndex(item => {
-    // if an item has a `cursor` on it, use that, otherwise try to generate one
+  const cursorIndex = results.findIndex((item) => {
+    // if an item has a `cursor` on it, use that, otherwise sets cursor to null
     let itemCursor = item.cursor ? item.cursor : getCursor(item);
 
     // if there's still not a cursor, return false by default
@@ -23,7 +25,7 @@ module.exports.paginateResults = ({
       ? []
       : results.slice(
           cursorIndex + 1,
-          Math.min(results.length, cursorIndex + 1 + pageSize),
+          Math.min(results.length, cursorIndex + 1 + pageSize)
         )
     : results.slice(0, pageSize);
 };
